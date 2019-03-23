@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>
+    <%= title %>
+  </title>
+  <link rel='stylesheet' href='../public/css/style.css' />
+</head>
+
+<body>
+  <h1>
+    <%= title %>
+  </h1>
+  <p>
+    Welcome to
+    <%= title %>
+  </p>
+
+  <p> form get req testing: </p>
+  <form action="http://127.0.0.1:3000/eland/process_get" method="GET">
+    <br> First Name:
+    <input type="text" name="first_name">
+    <br> Last Name:
+    <input type="text" name="last_name">
+    <input type="submit" value="Submit">
+  </form>
+
+  <p> from post req testing: </p>
+  <form action="http://127.0.0.1:3000/eland/process_post" method="POST">
+    <br> First Name:
+    <input type="text" name="first_name">
+    <br> Last Name:
+    <input type="text" name="last_name">
+    <input type="submit" value="Submit">
+  </form>
+
+  <p> from post upload file testing: </p>
+  <form action="http://127.0.0.1:3000/eland/file_upload" method="post" enctype="multipart/form-data">
+    <input type="file" name="image" size="50" />
+    <input type="text" name="cmd" value="4" />
+    <br>
+    <input type="submit" value="上传文件" />
+  </form>
+</body>
+
+</html>

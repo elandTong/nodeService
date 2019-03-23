@@ -1,0 +1,251 @@
+<!doctype html>
+<html>
+
+<head>
+  <title>Notification For Eland</title>
+  <script type="text/javascript" src="/socket.io/socket.io.js"></script>
+  <script src="http://code.jquery.com/jquery-1.11.1.js"></script>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: url('http://127.0.0.1:3000/images/notice_back.jpg');
+      font: 13px Helvetica, Arial;
+      box-sizing: border-box;
+    }
+
+    #zone {
+      background: bisque;
+      padding: 3px;
+      position: fixed;
+      bottom: 0;
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-sizing: border-box;
+    }
+
+    #text {
+      border: 0;
+      padding: 5px;
+      width: 70%;
+      height: 40px;
+      font-size: 16px;
+      color: black;
+      box-sizing: border-box;
+    }
+
+    #imag {
+      width: 9%;
+      height: 40px;
+      background: rgb(130, 224, 255);
+      border-radius: 8px;
+      border: none;
+      padding: 10px;
+      margin-left: 0.5%;
+      font-size: 16px;
+      color: white;
+      box-sizing: border-box;
+    }
+
+    #file {
+      width: 9%;
+      height: 40px;
+      background: rgb(130, 224, 255);
+      border-radius: 8px;
+      border: none;
+      padding: 10px;
+      margin-left: 0.5%;
+      font-size: 16px;
+      color: white;
+      box-sizing: border-box;
+    }
+
+    #send {
+      width: 9%;
+      height: 40px;
+      background: rgb(130, 224, 255);
+      border-radius: 8px;
+      border: none;
+      padding: 10px;
+      margin-left: 0.5%;
+      font-size: 16px;
+      color: white;
+      box-sizing: border-box;
+    }
+
+    #messages {
+      width: 100%;
+      overflow-x: hidden;
+      overflow-y: auto;
+      margin: 0px;
+      padding: 10px;
+      box-sizing: border-box;
+    }
+
+    #messages div {
+      width: fit-content;
+      background: rgb(130, 224, 255);
+      padding: 10px;
+      border-radius: 8px;
+      font-size: 18px;
+      color: black;
+      margin-top: 5px;
+      box-sizing: border-box;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="messages">
+  </div>
+  <div id="zone">
+    <input id="text" />
+    <button id="imag">IMAG</button>
+    <button id="file">FILE</button>
+    <button id="send">SEND</button>
+  </div>
+  <div style="display:none">
+    <form id="ForImagNative" enctype="multipart/form-data">
+      <input id="imag_input" type="file" name="image" size="100" maxlength="1" accept="image/*" />
+    </form>
+    <form id="ForFileNative" enctype="multipart/form-data">
+      <input id="file_input" type="file" name="outher" size="500" maxlength="1" />
+    </form>
+  </div>
+</body>
+
+</html>
+<script>
+  document.domain = "127.0.0.1";
+  var UPLOAD_FILE = "http://127.0.0.1:9080/uploadFiles";
+  function uploadFile(url, formData, succHandel, errHandel) {
+    $.ajax({
+      url: url,
+      type: 'POST',
+      data: formData,
+      processData: false, // 告诉jQuery不要去处理发送的数据
+      contentType: false, // 告诉jQuery不要去设置Content-Type请求头
+      beforeSend: function () {
+        console.log("upload...");
+      },
+      success: function (response) {
+        var obj;
+        try {
+          obj = JSON.parse(response);
+        } catch (e) {
+          obj = response;
+        }
+        if (succHandel != null) succHandel(obj);
+        console.log("success:" + response);
+      },
+      error: function (response) {
+        var obj;
+        try {
+          obj = JSON.parse(response);
+        } catch (e) {
+          obj = response;
+        }
+        if (errHandel != null) errHandel(obj);
+        console.log("err:" + JSON.stringify(response));
+      }
+    });
+  }
+</script>
+<script>
+  var rotW = window.innerWidth;
+  var rotH = window.innerHeight;
+  let socket = io();
+  $("#messages").css({ "height": rotH - 46 });
+  $('#send').click(function () {
+    var val = $('#text').val(); $('#text').val('');
+    if (val == null || val == "") { systemNotice('请输入要发送的信息!'); return; }
+    if (val.indexOf(":setNickname=") >= 0) {
+      var list = val.split("=");
+      socket.emit('setNickname', list[1]);
+      return;
+    }
+    socket.emit('notification', val);
+  });
+  $('#imag').click(function () {
+    $('#imag_input').click();
+  });
+  $('#file').click(function () {
+    $('#file_input').click();
+  });
+  socket.on('notification', function (msg) {
+    notice(msg);
+  });
+  Notification.requestPermission(function (permission) { });
+  function notice(msg) {
+    $('#messages').append('<div>' + msg + '</div>');
+    let _notification = new Notification('消息通知', {
+      body: msg,
+      icon: 'http://127.0.0.1:3000/images/notice.jpg'
+    });
+    setTimeout(function () {
+      _notification.close();
+    }, 5000);
+  }
+  function systemNotice(msg) {
+    $('#messages').append('<div>System:[' + msg + ']</div>');
+    let _notification = new Notification('消息通知', {
+      body: 'System:[' + msg + ']',
+      icon: 'http://127.0.0.1:3000/images/notice.jpg'
+    });
+    setTimeout(function () {
+      _notification.close();
+    }, 5000);
+  }
+  $("#imag_input").change(function () {
+    var slef = this;
+    var files = slef["files"];
+    if (files == null || files.length == 0) return;
+    var formData = new FormData(document.getElementById("ForImagNative"));
+    formData.append("cmd", 4);
+    uploadFile(UPLOAD_FILE, formData, function (jsonObj) {
+      var code = jsonObj["code"];
+      if (code == 0) {
+        var src = jsonObj["src"];
+        var img = '<img src="' + src + '" style="height:auto;max-height:250px"/>';
+        socket.emit('notification', img);
+      } else {
+        systemNotice("图片上传失败:" + JSON.stringify(jsonObj));
+      }
+      console.log("upload result:" + JSON.stringify(jsonObj));
+    }, function (err) {
+      systemNotice("图片上传失败:" + JSON.stringify(err));
+    });
+    $(slef).val("");
+  });
+  $("#file_input").change(function () {
+    var slef = this;
+    var files = slef["files"];
+    if (files == null || files.length == 0) return;
+    var formData = new FormData(document.getElementById("ForFileNative"));
+    formData.append("cmd", 5);
+    uploadFile(UPLOAD_FILE, formData, function (jsonObj) {
+      var code = jsonObj["code"];
+      if (code == 0) {
+        var src = jsonObj["src"];
+        socket.emit('notification', '文件地址: <a href="' + src + '" >' + src + '</a>');
+      } else {
+        systemNotice("文件上传失败:" + JSON.stringify(jsonObj));
+      }
+      console.log("upload result:" + JSON.stringify(jsonObj));
+    }, function (err) {
+      systemNotice("文件上传失败:" + JSON.stringify(err));
+    });
+    $(slef).val("");
+  });
+  window.onresize = function () {
+    rotW = window.innerWidth;
+    rotH = window.innerHeight;
+    $("#messages").css({ "height": rotH - 46 });
+  }
+</script>

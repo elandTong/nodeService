@@ -1,0 +1,157 @@
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=0"
+    />
+    <meta name="format-detection" content="telephone = no" />
+    <title>聊天室</title>
+    <script language="javascript" type="text/javascript" src="js/depend/jquery.js"></script>
+    <script language="javascript" type="text/javascript" src="js/depend/jquery.transit.js"></script>
+    <script language="javascript" type="text/javascript" src="js/depend/jquery.cookie.js"></script>
+    <script language="javascript" type="text/javascript" src="js/depend/spin.min.js"></script>
+    <script language="javascript" type="text/javascript" src="js/depend/swiper.min.js"></script>
+    <script language="javascript" type="text/javascript" src="js/config.js"></script>
+    <script language="javascript" type="text/javascript" src="js/app.js"></script>
+    <script language="javascript" type="text/javascript" src="js/appWidget.js"></script>
+    <script language="javascript" type="text/javascript" src="js/service.js"></script>
+    <script language="javascript" type="text/javascript" src="js/constant.js"></script>
+    <script language="javascript" type="text/javascript">
+        history.pushState(null, null, document.URL);
+        window.addEventListener('popstate', function () {
+            history.pushState(null, null, document.URL);
+            backClickFun();
+        });
+    </script>
+    <link rel="stylesheet" href="css/base.css" />
+    <link rel="stylesheet" href="css/spin.css" />
+    <link rel="stylesheet" href="css/swiper.min.css" />
+</head>
+
+<body id="root_body" style="position:fixed;margin:0px;overflow:hidden" oncontextmenu="return false" onselectstart="return false">
+    <div id="bodyDiv" style="position:absolute;overflow:hidden">
+        <div id="mainDiv" style="position:absolute;width:100%;height:100%;background-color:#2A2A2A;overflow:hidden">
+            <div id="top">
+                <div id="topTitle">聊天</div>
+                <div id="topOperating">
+                    <div id="topOperating_add">
+                        <img src="pic/themeMain/add_opt.png" style="width:20px" />
+                    </div>
+                </div>
+            </div>
+            <div style="width:100%;height:0.5px;background-color:#554B37"></div>
+            <div id="chatListDiv" style="position:relative;width:100%;overflow:hidden">
+                <div id="chatListDiv_content" style="position:absolute;top:0px;left:0px;width:100%;height:100%;overflow-x:hidden;overflow-y:auto">
+                    chatList
+                </div>
+                <div id="chatListDiv_subMenu" style="position:absolute;top:0px;left:0px;width:100%;height:100%;overflow:hidden;display:none"></div>
+            </div>
+        </div>
+        <div id="chatContentDiv" style="position:absolute;display:none">
+            <div id="chatContentDiv_top"></div>
+            <div id="chatContentDiv_content">
+                <div id="chatContentDiv_content_list"></div>
+                <div id="chatContentDiv_content_send"></div>
+            </div>
+        </div>
+        <div id="chatGroupDiv" style="position:absolute;display:none">
+            <div id="chatGroupDiv_top"></div>
+            <div id="chatGroupDiv_content"></div>
+        </div>
+        <div id="chatPersonalDiv" style="position:absolute;display:none">
+            <div id="chatPersonalDiv_top"></div>
+            <div id="chatPersonalDiv_content"></div>
+        </div>
+        <div id="chatPersonalOptDiv" style="position:absolute;display:none">
+            <div id="chatPersonalOptDiv_top"></div>
+            <div id="chatPersonalOptDiv_content"></div>
+        </div>
+        <div id="chatSendRedDiv" style="position:absolute;display:none">
+            <div id="chatSendRedDiv_top"></div>
+            <div id="chatSendRedDiv_content"></div>
+        </div>
+        <div id="chatOpenRedDiv" style="position:absolute;display:none">
+            <div id="chatOpenRedDiv_top"></div>
+            <div id="chatOpenRedDiv_content"></div>
+        </div>
+        <div id="chatRedRecordDiv" style="position:absolute;display:none">
+            <div id="chatRedRecordDiv_top"></div>
+            <div id="chatRedRecordDiv_content"></div>
+        </div>
+        <div id="indexPopupwindowBox" style="position: absolute;display: none">
+            <div id="indexPopupwindowBox_mask"></div>
+            <div id="indexPopupwindowBox_content"></div>
+        </div>
+        <div id="msgBox" style="width:100%;height:100%;position:absolute;left:0px;top:0px;display:none;z-index:20001">
+            <div id="msgBox_background" style="width: 100%; height: 100%;opacity: 0.5;background-color: #000000;position: absolute;top: 0px;left: 0px"
+                onClick="void(0)">
+            </div>
+            <div id="msgBox_content" style="width: 100%;height: 100%;display: flex;flex-direction: column-reverse">
+                <div id="msgBox_content_btns" style="padding-bottom: 30px;display: flex;justify-content: center;align-items: center;width: 100%;height: 45px">
+                    <div id="msgBox_content_btns_cancel" class="msgBox_content_btns_class" style="border-radius: 8px;height: 40px;width: 45%;display: none;justify-content: center;align-items: center">取消</div>
+                    <div id="msgBox_content_btns_sure" class="msgBox_content_btns_class" style="height: 40px;width: 90%;display: flex;justify-content: center;align-items: center">确认</div>
+                </div>
+                <div id="msgBox_content_content" style="width: 100%; height: 200px;background-color: #FFFFFF;display: flex;justify-content: center;align-items: center">
+                </div>
+                <div id="msgBox_content_top" style="display: flex;justify-content: space-between;align-items: center;width: 100%;height: 45px;background-color: #CCCCCC">
+                    <div id="msgBox_content_top_back" style="width: 45px;height: 45px;display: flex;justify-content: center;align-items: center">
+                        <img src="pic/themeMain/back.png" style="height: 15px" />
+                    </div>
+                    <div id="msgBox_content_top_title" style="height: 45px;display: flex;justify-content: center;align-items: center">
+                    </div>
+                    <div style="width: 45px"></div>
+                </div>
+            </div>
+        </div>
+        <div id="toast" style="width:100%;height:100%;position:absolute;left:0px;top:0px;display:none;z-index:20002">
+            <div id="toast_background" style="width: 100%; height: 100%;opacity: 0.7;background-color: #000000;position: absolute;top: 0px;left: 0px">
+            </div>
+            <div id="toast_content" style="width: 100%;height: 100%;position: absolute;top: 0px;left: 0px;display: flex;justify-content: center">
+                <div id="toast_content_msgbox" style="word-wrap:break-word;word-break:break-all;height: 35px; border-radius: 15px;background-color: #383838;color: #cccccc;font-size: 12px;display: flex;justify-content: center;align-items: center;padding-left: 10px;padding-right: 10px">
+                    message
+                </div>
+            </div>
+        </div>
+        <div id="loadingDiv" style="width:100%;height:100%;position:absolute;left:0px;top:0px;display:none;z-index:20000">
+            <div style="width: 100%;height: 100%;background-color: #000000;opacity: 0.7;position: absolute" onClick="clickEmpty()"></div>
+            <div style="width: 100%;height: 100%;display: flex;justify-content: center;align-items: center">
+                <div id="loadingView" style="width: 100px;height: 100px"></div>
+            </div>
+        </div>
+    </div>
+    <div id="native_component_accpet">
+        <form id="native_component_accpet_form" enctype="multipart/form-data">
+            <input id="native_component_accpet_image" type="file" name="image" size="50" accept="image/*" maxlength="1" />
+        </form>
+    </div>
+</body>
+
+</html>
+<script>
+    var mChatApp;
+    var mMsgBox;
+    var mLoader;
+    var mToast;
+    var mIndexPopWindowObj;
+    var mLangObj;
+    checkEvent();
+
+    mChatApp = new CHAT();
+    mChatApp.setAppStyle();
+    mChatApp.init();
+
+    mMsgBox = new msgBox("");
+    mMsgBox.init();
+
+    mLoader = new loader();
+    mLoader.init();
+
+    mToast = new toast();
+    mToast.init();
+
+    mIndexPopWindowObj = new popBox();
+    mIndexPopWindowObj.init();
+
+    mLangObj = new langObj();
+    mLangObj.init();
+</script>
